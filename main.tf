@@ -82,7 +82,7 @@ resource "azurerm_linux_web_app" "web-app" {
   app_settings = {
     "PORT" = "3000",
     "DB_HOST" = "postgres-db",
-    "DB_USERNAME" = "${data.azurerm_key_vault_secret.db-username.value}@${azurerm_postgresql_server.srv-pgsql.name}"
+    "DB_USERNAME" = "${data.azurerm_key_vault_secret.postgres-login.value}@${azurerm_postgresql_server.postgres-srv.name}"
     "DB_PASSWORD" = data.azurerm_key_vault_secret.postgres-password.value,
     "DB_DATABASE" = "postgres",
     "DB_DAILECT" = "postgres",
