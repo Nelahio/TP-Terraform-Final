@@ -16,3 +16,13 @@ data "azurerm_key_vault_secret" "postgres-password" {
   name="postgres-password"
   key_vault_id = data.azurerm_key_vault.kv.id
 }
+
+data "azurerm_key_vault_secret" "access-token" {
+  name="access-token"
+  key_vault_id = data.azurerm_key_vault.kv.id
+}
+
+data "azurerm_key_vault_secret" "refresh-token" {
+  name="refresh-token"
+  key_vault_id = data.azurerm_key_vault.kv.id
+}
