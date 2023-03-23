@@ -80,3 +80,28 @@ resource "azurerm_linux_web_app" "web-app" {
     "REFRESH_TOKEN_COOKIE_NAME" = var.refresh-token-cookie-name,
   }
 }
+
+resource "azurerm_container_group" "pgadmin" {
+  name                = "aci-pgadmin-${var.project_name}${var.environment_suffix}"
+  location            = data.azurerm_resource_group.rg-maalsi.location
+  resource_group_name = data.azurerm_resource_group.rg-maalsi.name
+  ip_address_type     = "public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+
+  container {
+    name   = "pgadmin"
+    image  = "dpage/pgadmin4:latest"
+    cpu    = "0.5"
+    memory = "1.5"
+
+    ports {
+      port     = 80
+      protocol = "TCP"
+    }
+    environment_variables = {
+      "PGADMIN_DEFAULT_EMAIL" = data.azurerm_key_vault_secret.pgadmin-email.value
+      "PGADMIN_DEFAULT_PASSWORD" = data.azurerm_key_vault_secret.pgadmin-password.value
+    }
+  }  
+}
