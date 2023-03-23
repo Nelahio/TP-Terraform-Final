@@ -32,8 +32,9 @@ resource "azurerm_postgresql_server" "postgres-srv" {
 
   administrator_login          = data.azurerm_key_vault_secret.postgres-login.value
   administrator_login_password = data.azurerm_key_vault_secret.postgres-password.value
-  version                      = "9.5"
+  version                      = "11"
   ssl_enforcement_enabled      = true
+  ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
 resource "azurerm_postgresql_firewall_rule" "postgres-srv" {
@@ -68,6 +69,28 @@ resource "azurerm_linux_web_app" "web-app" {
   service_plan_id     = azurerm_service_plan.app-plan.id
 
   site_config {
-    
+    application_stack {
+      node_version = "12-lts"
+    }
+  }
+
+  connection_string {
+    name = "DefaultConnection"
+    type = "PostgreSQL"
+    value = "host=postgres-adislaire-dev.postgres.database.azure.com port=5432 dbname=${azurerm_postgresql_database.postgres-db.name} user=${data.azurerm_key_vault_secret.postgres-login.value}@${azurerm_postgresql_server.postgres-srv.name} password=${data.azurerm_key_vault_secret.postgres-password.value} sslmode=require"
+  }
+  app_settings = {
+    "PORT" = "3000",
+    "DB_HOST" = "postgres-db",
+    "DB_USERNAME" = "${data.azurerm_key_vault_secret.db-username.value}@${azurerm_postgresql_server.srv-pgsql.name}"
+    "DB_PASSWORD" = data.azurerm_key_vault_secret.postgres-password.value,
+    "DB_DATABASE" = "postgres",
+    "DB_DAILECT" = "postgres",
+    "DB_PORT" = "5432",
+    "ACCESS_TOKEN_SECRET" = "accesstoken",
+    "REFRESH_TOKEN_SECRET" = "refreshtoken",
+    "ACCESS_TOKEN_EXPIRY" = "15m",
+    "REFRESH_TOKEN_EXPIRY" = "7d",
+    "REFRESH_TOKEN_COOKIE_NAME" = "jid",
   }
 }
