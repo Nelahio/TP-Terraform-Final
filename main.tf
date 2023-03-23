@@ -85,8 +85,8 @@ resource "azurerm_container_group" "pgadmin" {
   name                = "aci-pgadmin-${var.project_name}${var.environment_suffix}"
   location            = data.azurerm_resource_group.rg-maalsi.location
   resource_group_name = data.azurerm_resource_group.rg-maalsi.name
-  ip_address_type     = "public"
-  dns_name_label      = "aci-label"
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-${var.project_name}${var.environment_suffix}"
   os_type             = "Linux"
 
   container {
